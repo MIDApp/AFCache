@@ -36,10 +36,17 @@
 - (id)init {
     self = [super init];
     if (self) {
-        // TODO: We cannot assume that this item's cache is the default sharedInstance
-        _filename = [AFCache sharedInstance].cacheWithHashname ? [self newUniqueFilename] : nil;
     }
     return self;
+}
+
+- (NSString *)filename
+{
+    if (!_filename)
+    {
+        _filename = [self newUniqueFilename];
+    }
+    return _filename;
 }
 
 - (id)initWithCoder: (NSCoder *) coder {
@@ -110,7 +117,7 @@
     [s appendFormat:@"redirectResponse: %@\n", self.redirectResponse];
     [s appendFormat:@"filename: %@\n", self.filename];
 	[s appendFormat:@"packageArchiveStatus: %d\n", self.packageArchiveStatus];
-	[s appendFormat:@"headers: %d\n", self.headers];
+	[s appendFormat:@"headers: %@\n", self.headers];
 	return s;
 }
 

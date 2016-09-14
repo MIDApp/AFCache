@@ -24,12 +24,41 @@
 #import "DateParser.h"
 #import "AFMediaTypeParser.h"
 
+@interface AFURLCache ()
+
+@property (strong, readonly, nonatomic) AFCache *cache;
+
+@end
+
 @implementation AFURLCache
+
+@synthesize cache = _cache;
+
+- (AFCache *)cache
+{
+    if (!_cache)
+    {
+        return [AFCache sharedInstance];
+    }
+    return _cache;
+}
+
+- (instancetype)initWithCache:(AFCache *)cache
+{
+    self = [self initWithMemoryCapacity:0
+                           diskCapacity:0
+                               diskPath:nil];
+    if (self)
+    {
+        _cache = cache;
+    }
+    return self;
+}
 
 -(NSCachedURLResponse*)cachedResponseForRequest:(NSURLRequest*)request
 {
     NSURL* url = request.URL;
-	AFCacheableItem* item = [[AFCache sharedInstance] cacheableItemFromCacheStore:url];	
+	AFCacheableItem* item = [self.cache cacheableItemFromCacheStore:url];
 	if (item && item.cacheStatus == kCacheStatusFresh) {
 
         AFMediaTypeParser *parser = [[AFMediaTypeParser alloc] initWithMIMEType:item.info.mimeType];
@@ -64,7 +93,9 @@
 		expireDate	 = (expiresHeader)  ? [DateParser gh_parseHTTP: expiresHeader]  : nil;
 
 		AFCacheableItem *item = [[AFCacheableItem alloc] initWithURL:request.URL lastModified:lastModified expireDate:expireDate contentType:contentTypeHeader];
-		[[AFCache sharedInstance] importCacheableItem:item withData:cachedResponse.data];	
+        item.cache = self.cache;
+        
+        [self.cache importCacheableItem:item withData:cachedResponse.data];
 	}				
 }
 

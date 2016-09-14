@@ -63,9 +63,17 @@
         _url = URL;
         _cacheStatus = kCacheStatusFresh;
         _validUntil = _info.expireDate;
-        _cache = [AFCache sharedInstance];
     }
     return self;
+}
+
+- (AFCache *)cache
+{
+    if (!_cache)
+    {
+        _cache = [AFCache sharedInstance];
+    }
+    return _cache;
 }
 
 - (AFCacheableItem*)initWithURL:(NSURL*)URL

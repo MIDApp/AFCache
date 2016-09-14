@@ -19,11 +19,14 @@
  */
 
 #import <Foundation/Foundation.h>
+@class AFCache;
 
 
 @interface AFURLCache : NSURLCache
 {
 
 }
+
+- (instancetype)initWithCache:(AFCache *)cache;
 
 @end

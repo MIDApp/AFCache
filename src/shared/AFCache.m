@@ -79,8 +79,14 @@ static NSMutableDictionary* AFCache_contextCache = nil;
 
 #pragma mark init methods
 
-- (id)initWithContext:(NSString*)context {
-    if (!context && sharedAFCacheInstance) {
+- (instancetype)initWithContext:(NSString*)context
+{
+    return [self initWithContext:context dataPath:nil];
+}
+
+- (instancetype)initWithContext:(NSString*)context dataPath:(NSString *)dataPath
+{
+    if (!context && sharedAFCacheInstance && !dataPath) {
         return [AFCache sharedInstance];
     }
     
@@ -98,14 +104,14 @@ static NSMutableDictionary* AFCache_contextCache = nil;
                                                      name:UIApplicationWillTerminateNotification
                                                    object:nil];
 #endif
-        if (!AFCache_contextCache) {
-            AFCache_contextCache = [[NSMutableDictionary alloc] init];
-        }
         
         if (context) {
+            if (!AFCache_contextCache) {
+                AFCache_contextCache = [[NSMutableDictionary alloc] init];
+            }
             [AFCache_contextCache setObject:[NSValue valueWithPointer:(__bridge const void *)(self)] forKey:context];
         }
-        
+        _dataPath = dataPath;
         _context = [context copy];
         [self reinitialize];
 		[self initMimeTypes];
